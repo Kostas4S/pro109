@@ -1,44 +1,37 @@
+import plotly.figure_factory as ff
 import pandas as pd
-import statistics
 import csv
-df = pd.read_csv("height-weight.csv")
-height_list = df["Height(Inches)"].to_list()
-weight_list = df["Weight(Pounds)"].to_list()
-#Mean for height and Weight
-height_mean = statistics.mean(height_list)
-weight_mean = statistics.mean(weight_list)
-
-height_median = statistics.median(height_list)
-weight_median = statistics.median(weight_list)
-
-height_mode = statistics.mode(height_list)
-weight_mode = statistics.mode(weight_list)
-
-print("Mean, Median and Mode of height is {}, {} and {} respectively".format(height_mean, height_median, height_mode))
-print("Mean, Median and Mode of weight is {}, {} and {} respectively".format(weight_mean, weight_median, weight_mode))
-
-gender_std_deviation = statistics.stdev(height_list)
-test_std_deviation = statistics.stdev(weight_list)
-
-test_first_std_deviation_start, height_first_std_deviation_end = height_mean-test_std_deviation, height_mean+height_std_deviation
-test_second_std_deviation_start, height_second_std_deviation_end = height_mean-(2*test_std_deviation), height_mean+(2*height_std_deviation)
-test_third_std_deviation_start, height_third_std_deviation_end = height_mean-(3*gender_std_deviation), height_mean+(3*height_std_deviation)
-
-gender_first_std_deviation_start, weight_first_std_deviation_end = weight_mean-gender_std_deviation, weight_mean+weight_std_deviation
-gender_second_std_deviation_start, weight_second_std_deviation_end = weight_mean-(2*gender_std_deviation), weight_mean+(2*weight_std_deviation)
-gender_third_std_deviation_start, weight_third_std_deviation_end = weight_mean-(3*gender_std_deviation), weight_mean+(3*weight_std_deviation)
-
-height_list_of_data_within_1_std_deviation = [result for result in height_list if result > height_first_std_deviation_start and result < height_first_std_deviation_end]
-height_list_of_data_within_2_std_deviation = [result for result in height_list if result > height_second_std_deviation_start and result < height_second_std_deviation_end]
-height_list_of_data_within_3_std_deviation = [result for result in height_list if result > height_third_std_deviation_start and result < height_third_std_deviation_end]
-
-weight_list_of_data_within_1_std_deviation = [result for result in weight_list if result > weight_first_std_deviation_start and result < weight_first_std_deviation_end]
-weight_list_of_data_within_2_std_deviation = [result for result in weight_list if result > weight_second_std_deviation_start and result < weight_second_std_deviation_end]
-weight_list_of_data_within_3_std_deviation = [result for result in weight_list if result > weight_third_std_deviation_start and result < weight_third_std_deviation_end]
-
-print("{}% of data for height lies within 1 standard deviation".format(len(height_list_of_data_within_1_std_deviation)*100.0/len(height_list)))
-print("{}% of data for height lies within 2 standard deviations".format(len(height_list_of_data_within_2_std_deviation)*100.0/len(height_list)))
-print("{}% of data for height lies within 3 standard deviations".format(len(height_list_of_data_within_3_std_deviation)*100.0/len(height_list)))
-print("{}% of data for weight lies within 1 standard deviation".format(len(weight_list_of_data_within_1_std_deviation)*100.0/len(weight_list)))
-print("{}% of data for weight lies within 2 standard deviations".format(len(weight_list_of_data_within_2_std_deviation)*100.0/len(weight_list)))
-print("{}% of data for weight lies within 3 standard deviations".format(len(weight_list_of_data_within_3_std_deviation)*100.0/len(weight_list)))
+import plotly.graph_objects as go
+import statistics
+import random
+#reading scores data
+df = pd.read_csv("StudentsPerformance.csv")
+data = df["reading score"].tolist()
+#Calculating the mean and the standard deviation
+mean = sum(data) / len(data)
+std_deviation = statistics.stdev(data)
+median = statistics.median(data)
+mode = statistics.mode(data)
+#Finding 1 standard deviation stard and end values, and 2 standard deviations stard and end values
+first_std_deviation_start, first_std_deviation_end = mean-std_deviation, mean+std_deviation
+second_std_deviation_start, second_std_deviation_end = mean-(2*std_deviation), mean+(2*std_deviation)
+third_std_deviation_start, third_std_deviation_end = mean-(3*std_deviation), mean+(3*std_deviation)
+#Plotting the chart, and lines for mean, 1 standard deviation and 2 standard deviations
+fig = ff.create_distplot([data], ["reading scores"], show_hist=False)
+fig.add_trace(go.Scatter(x=[mean, mean], y=[0, 0.17], mode="lines", name="MEAN"))
+fig.add_trace(go.Scatter(x=[first_std_deviation_start, first_std_deviation_start], y=[0, 0.17], mode="lines", name="STANDARD DEVIATION 1"))
+fig.add_trace(go.Scatter(x=[first_std_deviation_end, first_std_deviation_end], y=[0, 0.17], mode="lines", name="STANDARD DEVIATION 1"))
+fig.add_trace(go.Scatter(x=[second_std_deviation_start, second_std_deviation_start], y=[0, 0.17], mode="lines", name="STANDARD DEVIATION 2"))
+fig.add_trace(go.Scatter(x=[second_std_deviation_end, second_std_deviation_end], y=[0, 0.17], mode="lines", name="STANDARD DEVIATION 2"))
+fig.show()
+#Printing the findings
+list_of_data_within_1_std_deviation = [result for result in data if result > first_std_deviation_start and result < first_std_deviation_end]
+list_of_data_within_2_std_deviation = [result for result in data if result > second_std_deviation_start and result < second_std_deviation_end]
+list_of_data_within_3_std_deviation = [result for result in data if result > third_std_deviation_start and result < third_std_deviation_end]
+print("Mean of this data is {}".format(mean))
+print("Median of this data is {}".format(median))
+print("Mode of this data is {}".format(mode))
+print("Standard deviation of this data is {}".format(std_deviation))
+print("{}% of data lies within 1 standard deviation".format(len(list_of_data_within_1_std_deviation)*100.0/len(data)))
+print("{}% of data lies within 2 standard deviations".format(len(list_of_data_within_2_std_deviation)*100.0/len(data)))
+print("{}% of data lies within 3 standard deviations".format(len(list_of_data_within_3_std_deviation)*100.0/len(data)))
